@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RosaChic - Guardarropa Digital</title>
+    <!-- Google Fonts & Tailwind CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            dark: '#881337',
+                            gold: '#d4af37'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); }
+        .gold-border { border-color: #d4af37; }
+    </style>
+</head>
+<body class="bg-rose-50/50 text-gray-800 font-sans pb-24 max-w-md mx-auto min-h-screen border-x border-rose-100 shadow-2xl relative">
+
+    <!-- Header / Branding -->
+    <header class="sticky top-0 z-40 glass border-b border-rose-100 px-5 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-400 to-rose-300 flex items-center justify-center text-white font-serif font-bold text-xl shadow-md border-2 border-white">
+                R
+            </div>
+            <div>
+                <h1 class="font-serif font-bold text-xl tracking-wide text-brand-dark leading-tight">RosaChic</h1>
+                <p class="text-[10px] tracking-widest text-brand-400 uppercase font-semibold">Armario Digital</p>
+            </div>
+        </div>
+        <button onclick="openRegisterModal()" class="bg-brand-500 hover:bg-brand-600 text-white p-2.5 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        </button>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="p-4 space-y-6">
+
+        <!-- Tab 1: Inicio / Home -->
+        <section id="sec-home" class="tab-content space-y-5">
+            <!-- Banner Bienvenida -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-brand-400 to-brand-500 p-6 text-white shadow-xl">
+                <div class="relative z-10 space-y-2">
+                    <span class="bg-white/20 text-xs px-3 py-1 rounded-full uppercase tracking-wider font-medium">Estilo Diario</span>
+                    <h2 class="font-serif text-2xl font-bold leading-tight">¡Hola, Bella! ✨</h2>
+                    <p class="text-rose-100 text-xs leading-relaxed">Organiza tus prendas y crea outfits perfectos para cualquier ocasión.</p>
+                </div>
+                <div class="absolute -right-6 -bottom-10 w-36 h-36 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+            </div>
+
+            <!-- Resumen de Guardarropa -->
+            <div>
+                <h3 class="font-serif font-bold text-gray-800 text-lg mb-3">Tu Colección</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-white p-4 rounded-2xl border border-rose-100 shadow-sm text-center">
+                        <span id="stat-total" class="block font-bold text-2xl text-brand-500">0</span>
+                        <span class="text-xs text-gray-500 font-medium">Prendas</span>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-rose-100 shadow-sm text-center">
+                        <span id="stat-outfits" class="block font-bold text-2xl text-brand-500">0</span>
+                        <span class="text-xs text-gray-500 font-medium">Outfits</span>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-rose-100 shadow-sm text-center">
+                        <span id="stat-favs" class="block font-bold text-2xl text-brand-500">0</span>
+                        <span class="text-xs text-gray-500 font-medium">Favoritos</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inspiración del día -->
+            <div>
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-serif font-bold text-gray-800 text-lg">Recomendación de Hoy</h3>
+                    <button onclick="switchTab('outfits')" class="text-xs font-semibold text-brand-500 hover:underline">Ver todos</button>
+                </div>
+                <div id="home-outfit-card" class="bg-white rounded-2xl p-4 border border-rose-100 shadow-sm">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 2: Catálogo de Prendas -->
+        <section id="sec-catalog" class="tab-content space-y-4 hidden">
+            <div class="flex items-center justify-between">
+                <h2 class="font-serif font-bold text-xl text-gray-800">Mi Catálogo</h2>
+                <input type="text" id="search-input" oninput="renderCatalog()" placeholder="Buscar prenda..." class="w-1/2 text-xs px-3 py-2 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white">
+            </div>
+
+            <!-- Chips de Categorías -->
+            <div class="flex space-x-2 overflow-x-auto no-scrollbar py-1 text-xs">
+                <button onclick="filterCategory('all')" class="cat-chip active bg-brand-500 text-white font-medium px-4 py-2 rounded-full whitespace-nowrap shadow-sm">Todas</button>
+                <button onclick="filterCategory('Blusas')" class="cat-chip bg-white text-gray-600 border border-rose-100 font-medium px-4 py-2 rounded-full whitespace-nowrap">Blusas</button>
+                <button onclick="filterCategory('Pantalones')" class="cat-chip bg-white text-gray-600 border border-rose-100 font-medium px-4 py-2 rounded-full whitespace-nowrap">Pantalones</button>
+                <button onclick="filterCategory('Vestidos')" class="cat-chip bg-white text-gray-600 border border-rose-100 font-medium px-4 py-2 rounded-full whitespace-nowrap">Vestidos</button>
+                <button onclick="filterCategory('Faldas')" class="cat-chip bg-white text-gray-600 border border-rose-100 font-medium px-4 py-2 rounded-full whitespace-nowrap">Faldas</button>
+                <button onclick="filterCategory('Zapatos')" class="cat-chip bg-white text-gray-600 border border-rose-100 font-medium px-4 py-2 rounded-full whitespace-nowrap">Zapatos</button>
+                <button onclick="filterCategory('Accesorios')" class="cat-chip bg-white text-gray-600 border border-rose-100 font-medium px-4 py-2 rounded-full whitespace-nowrap">Accesorios</button>
+            </div>
+
+            <!-- Grilla de prendas -->
+            <div id="catalog-grid" class="grid grid-cols-2 gap-3">
+                <!-- Se llena con JS -->
+            </div>
+        </section>
+
+        <!-- Tab 3: Creador de Outfits -->
+        <section id="sec-outfits" class="tab-content space-y-4 hidden">
+            <h2 class="font-serif font-bold text-xl text-gray-800">Creador de Outfits</h2>
+            <div class="bg-white p-4 rounded-2xl border border-rose-100 shadow-sm space-y-3">
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 block mb-1">Nombre del Outfit</label>
+                    <input type="text" id="outfit-name" placeholder="Ej: Casual de Viernes" class="w-full text-xs px-3 py-2 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-brand-400">
+                </div>
+
+                <!-- Selectores de Prenda por Tipo -->
+                <div class="space-y-2">
+                    <div>
+                        <label class="text-[11px] font-medium text-gray-500">Parte Superior / Vestido</label>
+                        <select id="outfit-top" class="w-full text-xs p-2 rounded-xl border border-rose-200 bg-rose-50/30"></select>
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-medium text-gray-500">Parte Inferior</label>
+                        <select id="outfit-bottom" class="w-full text-xs p-2 rounded-xl border border-rose-200 bg-rose-50/30"></select>
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-medium text-gray-500">Calzado</label>
+                        <select id="outfit-shoes" class="w-full text-xs p-2 rounded-xl border border-rose-200 bg-rose-50/30"></select>
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-medium text-gray-500">Accesorio</label>
+                        <select id="outfit-acc" class="w-full text-xs p-2 rounded-xl border border-rose-200 bg-rose-50/30"></select>
+                    </div>
+                </div>
+
+                <button onclick="saveOutfit()" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs py-3 rounded-xl shadow transition">
+                    Guardar Combinación
+                </button>
+            </div>
+
+            <h3 class="font-serif font-bold text-lg text-gray-800 pt-2">Mis Outfits Guardados</h3>
+            <div id="outfits-list" class="space-y-3">
+                <!-- Outfits creados -->
+            </div>
+        </section>
+
+        <!-- Tab 4: Favoritos -->
+        <section id="sec-favs" class="tab-content space-y-4 hidden">
+            <h2 class="font-serif font-bold text-xl text-gray-800">Prendas Favoritas ❤️</h2>
+            <div id="favs-grid" class="grid grid-cols-2 gap-3">
+                <!-- Favoritos -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Registrar/Editar Prenda -->
+    <div id="modal-item" class="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center hidden p-0 sm:p-4 transition-opacity">
+        <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-rose-100 pb-3">
+                <h3 id="modal-title" class="font-serif font-bold text-lg text-brand-dark">Nueva Prenda</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+            </div>
+            
+            <form id="item-form" onsubmit="handleItemSubmit(event)" class="space-y-3">
+                <input type="hidden" id="item-id">
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 block mb-1">Nombre de la prenda</label>
+                    <input type="text" id="item-name" required placeholder="Ej: Blusa Seda Rosa" class="w-full text-xs px-3 py-2.5 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-brand-400">
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 block mb-1">Categoría</label>
+                    <select id="item-category" required class="w-full text-xs px-3 py-2.5 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white">
+                        <option value="Blusas">Blusa</option>
+                        <option value="Pantalones">Pantalón</option>
+                        <option value="Vestidos">Vestido</option>
+                        <option value="Faldas">Falda</option>
+                        <option value="Zapatos">Zapatos</option>
+                        <option value="Accesorios">Accesorio</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 block mb-1">Imagen (URL o Archivo)</label>
+                    <input type="text" id="item-url" placeholder="https://..." class="w-full text-xs px-3 py-2 rounded-xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-brand-400 mb-2">
+                    <input type="file" id="item-file" accept="image/*" onchange="convertImageToBase64()" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-rose-50 file:text-brand-600 hover:file:bg-rose-100">
+                </div>
+
+                <div id="image-preview" class="hidden w-full h-32 rounded-xl overflow-hidden bg-rose-50 flex items-center justify-center border border-rose-100">
+                    <img id="preview-img" src="" class="h-full object-cover">
+                </div>
+
+                <div class="pt-2 flex space-x-2">
+                    <button type="button" onclick="closeModal()" class="w-1/2 bg-gray-100 text-gray-600 text-xs py-3 rounded-xl font-medium">Cancelar</button>
+                    <button type="submit" class="w-1/2 bg-brand-500 text-white text-xs py-3 rounded-xl font-medium shadow">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Navegación Inferior (Estilo App Móvil) -->
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass border-t border-rose-100 px-4 py-2 z-40 flex justify-around items-center">
+        <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center text-brand-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            <span class="text-[10px] mt-0.5 font-medium">Inicio</span>
+        </button>
+        <button onclick="switchTab('catalog')" id="nav-catalog" class="nav-btn flex flex-col items-center text-gray-400 hover:text-brand-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+            <span class="text-[10px] mt-0.5 font-medium">Catálogo</span>
+        </button>
+        <button onclick="switchTab('outfits')" id="nav-outfits" class="nav-btn flex flex-col items-center text-gray-400 hover:text-brand-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+            <span class="text-[10px] mt-0.5 font-medium">Outfits</span>
+        </button>
+        <button onclick="switchTab('favs')" id="nav-favs" class="nav-btn flex flex-col items-center text-gray-400 hover:text-brand-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+            <span class="text-[10px] mt-0.5 font-medium">Favoritos</span>
+        </button>
+    </nav>
+
+    <!-- Script de Lógica JavaScript -->
+    <script>
+        // Datos Iniciales de Muestra
+        const initialClothes = [
+            { id: '1', name: 'Blusa de Seda Rosa', category: 'Blusas', image: 'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?auto=format&fit=crop&w=400&q=80', fav: true },
+            { id: '2', name: 'Pantalón Blazer Blanco', category: 'Pantalones', image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=400&q=80', fav: false },
+            { id: '3', name: 'Vestido Floral Verano', category: 'Vestidos', image: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=400&q=80', fav: true },
+            { id: '4', name: 'Zapatillas Urbanas', category: 'Zapatos', image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=400&q=80', fav: false },
+            { id: '5', name: 'Bolso Elegante Beige', category: 'Accesorios', image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=400&q=80', fav: true }
+        ];
+
+        // Estado Local
+        let clothes = JSON.parse(localStorage.getItem('rc_clothes')) || initialClothes;
+        let outfits = JSON.parse(localStorage.getItem('rc_outfits')) || [
+            { id: 'o1', name: 'Chic Urbano', top: '1', bottom: '2', shoes: '4', acc: '5' }
+        ];
+        let currentFilter = 'all';
+
+        // Guardar LocalStorage
+        function saveData() {
+            localStorage.setItem('rc_clothes', JSON.stringify(clothes));
+            localStorage.setItem('rc_outfits', JSON.stringify(outfits));
+            updateStats();
+        }
+
+        // Navegación de Solapas
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-brand-500');
+                btn.classList.add('text-gray-400');
+            });
+            document.getElementById(`nav-${tabId}`).classList.add('text-brand-500');
+            document.getElementById(`nav-${tabId}`).classList.remove('text-gray-400');
+
+            if(tabId === 'catalog') renderCatalog();
+            if(tabId === 'favs') renderFavs();
+            if(tabId === 'outfits') renderOutfitSelectors();
+            if(tabId === 'home') renderHomeOutfit();
+        }
+
+        // Renderizar Métricas
+        function updateStats() {
+            document.getElementById('stat-total').innerText = clothes.length;
+            document.getElementById('stat-outfits').innerText = outfits.length;
+            document.getElementById('stat-favs').innerText = clothes.filter(c => c.fav).length;
+        }
+
+        // Renderizar Catálogo
+        function renderCatalog() {
+            const grid = document.getElementById('catalog-grid');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            grid.innerHTML = '';
+
+            const filtered = clothes.filter(item => {
+                const matchesCat = currentFilter === 'all' || item.category === currentFilter;
+                const matchesSearch = item.name.toLowerCase().includes(search);
+                return matchesCat && matchesSearch;
+            });
+
+            if(filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 text-center text-gray-400 py-8 text-xs">No hay prendas registradas.</div>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                grid.innerHTML += `
+                    <div class="bg-white rounded-2xl overflow-hidden border border-rose-100 shadow-sm flex flex-col relative group">
+                        <img src="${item.image}" class="h-36 w-full object-cover">
+                        <button onclick="toggleFav('${item.id}')" class="absolute top-2 right-2 bg-white/80 backdrop-blur p-1.5 rounded-full text-brand-500 shadow">
+                            <svg class="w-4 h-4 ${item.fav ? 'fill-current' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        </button>
+                        <div class="p-3 flex-1 flex flex-col justify-between space-y-1">
+                            <div>
+                                <span class="text-[10px] text-brand-400 font-semibold uppercase tracking-wider">${item.category}</span>
+                                <h4 class="font-medium text-xs text-gray-800 line-clamp-1">${item.name}</h4>
+                            </div>
+                            <div class="flex justify-end space-x-2 pt-1 border-t border-rose-50">
+                                <button onclick="editItem('${item.id}')" class="text-gray-400 hover:text-brand-500 text-xs">Editar</button>
+                                <button onclick="deleteItem('${item.id}')" class="text-rose-400 hover:text-rose-600 text-xs">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Filtrar Categoría
+        function filterCategory(cat) {
+            currentFilter = cat;
+            document.querySelectorAll('.cat-chip').forEach(btn => {
+                btn.classList.remove('bg-brand-500', 'text-white');
+                btn.classList.add('bg-white', 'text-gray-600');
+            });
+            event.target.classList.add('bg-brand-500', 'text-white');
+            event.target.classList.remove('bg-white', 'text-gray-600');
+            renderCatalog();
+        }
+
+        // Renderizar Favoritos
+        function renderFavs() {
+            const grid = document.getElementById('favs-grid');
+            grid.innerHTML = '';
+            const favs = clothes.filter(c => c.fav);
+            if(!favs.length) {
+                grid.innerHTML = `<div class="col-span-2 text-center text-gray-400 py-8 text-xs">No tienes favoritos aún.</div>`;
+                return;
+            }
+            favs.forEach(item => {
+                grid.innerHTML += `
+                    <div class="bg-white rounded-2xl overflow-hidden border border-rose-100 shadow-sm relative">
+                        <img src="${item.image}" class="h-36 w-full object-cover">
+                        <div class="p-3">
+                            <span class="text-[10px] text-brand-400 font-semibold uppercase">${item.category}</span>
+                            <h4 class="font-medium text-xs text-gray-800">${item.name}</h4>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Modal Manejo
+        function openRegisterModal() {
+            document.getElementById('item-form').reset();
+            document.getElementById('item-id').value = '';
+            document.getElementById('modal-title').innerText = 'Nueva Prenda';
+            document.getElementById('image-preview').classList.add('hidden');
+            document.getElementById('modal-item').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-item').classList.add('hidden');
+        }
+
+        // Convertir Imagen Local
+        function convertImageToBase64() {
+            const file = document.getElementById('item-file').files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    document.getElementById('item-url').value = reader.result;
+                    document.getElementById('preview-img').src = reader.result;
+                    document.getElementById('image-preview').classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Crear/Editar submit
+        function handleItemSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('item-id').value;
+            const name = document.getElementById('item-name').value;
+            const category = document.getElementById('item-category').value;
+            const image = document.getElementById('item-url').value || 'https://via.placeholder.com/300?text=Prenda';
+
+            if(id) {
+                const idx = clothes.findIndex(c => c.id === id);
+                clothes[idx] = { ...clothes[idx], name, category, image };
+            } else {
+                clothes.push({ id: Date.now().toString(), name, category, image, fav: false });
+            }
+
+            saveData();
+            closeModal();
+            renderCatalog();
+        }
+
+        function editItem(id) {
+            const item = clothes.find(c => c.id === id);
+            if(!item) return;
+            document.getElementById('item-id').value = item.id;
+            document.getElementById('item-name').value = item.name;
+            document.getElementById('item-category').value = item.category;
+            document.getElementById('item-url').value = item.image;
+            document.getElementById('modal-title').innerText = 'Editar Prenda';
+            document.getElementById('modal-item').classList.remove('hidden');
+        }
+
+        function deleteItem(id) {
+            if(confirm('¿Deseas eliminar esta prenda?')) {
+                clothes = clothes.filter(c => c.id !== id);
+                saveData();
+                renderCatalog();
+            }
+        }
+
+        function toggleFav(id) {
+            const item = clothes.find(c => c.id === id);
+            if(item) {
+                item.fav = !item.fav;
+                saveData();
+                renderCatalog();
+            }
+        }
+
+        // OUTFITS LOGIC
+        function renderOutfitSelectors() {
+            const populate = (elemId, cats) => {
+                const select = document.getElementById(elemId);
+                select.innerHTML = '<option value="">Ninguna</option>';
+                clothes.filter(c => cats.includes(c.category)).forEach(c => {
+                    select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+                });
+            };
+
+            populate('outfit-top', ['Blusas', 'Vestidos']);
+            populate('outfit-bottom', ['Pantalones', 'Faldas']);
+            populate('outfit-shoes', ['Zapatos']);
+            populate('outfit-acc', ['Accesorios']);
+
+            renderOutfitsList();
+        }
+
+        function saveOutfit() {
+            const name = document.getElementById('outfit-name').value;
+            if(!name) return alert('Por favor escribe un nombre para el outfit');
+
+            const outfit = {
+                id: Date.now().toString(),
+                name,
+                top: document.getElementById('outfit-top').value,
+                bottom: document.getElementById('outfit-bottom').value,
+                shoes: document.getElementById('outfit-shoes').value,
+                acc: document.getElementById('outfit-acc').value,
+            };
+
+            outfits.push(outfit);
+            saveData();
+            document.getElementById('outfit-name').value = '';
+            renderOutfitsList();
+        }
+
+        function renderOutfitsList() {
+            const container = document.getElementById('outfits-list');
+            container.innerHTML = '';
+
+            if(!outfits.length) {
+                container.innerHTML = '<p class="text-xs text-gray-400">No hay combinaciones guardadas.</p>';
+                return;
+            }
+
+            outfits.forEach(o => {
+                const getItem = id => clothes.find(c => c.id === id);
+                const items = [getItem(o.top), getItem(o.bottom), getItem(o.shoes), getItem(o.acc)].filter(Boolean);
+
+                container.innerHTML += `
+                    <div class="bg-white p-3 rounded-2xl border border-rose-100 shadow-sm space-y-2">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-serif font-bold text-sm text-gray-800">${o.name}</h4>
+                            <button onclick="deleteOutfit('${o.id}')" class="text-xs text-rose-400">Eliminar</button>
+                        </div>
+                        <div class="flex space-x-2 overflow-x-auto">
+                            ${items.map(i => `<img src="${i.image}" class="w-14 h-14 rounded-xl object-cover border border-rose-100">`).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteOutfit(id) {
+            outfits = outfits.filter(o => o.id !== id);
+            saveData();
+            renderOutfitsList();
+        }
+
+        function renderHomeOutfit() {
+            const card = document.getElementById('home-outfit-card');
+            if(!outfits.length) {
+                card.innerHTML = '<p class="text-xs text-gray-400 text-center py-4">Agrega prendas y outfits para ver sugerencias.</p>';
+                return;
+            }
+            const o = outfits[0];
+            const getItem = id => clothes.find(c => c.id === id);
+            const items = [getItem(o.top), getItem(o.bottom), getItem(o.shoes), getItem(o.acc)].filter(Boolean);
+
+            card.innerHTML = `
+                <h4 class="font-serif font-bold text-sm text-brand-dark mb-2">${o.name}</h4>
+                <div class="grid grid-cols-4 gap-2">
+                    ${items.map(i => `
+                        <div class="text-center">
+                            <img src="${i.image}" class="w-full h-16 rounded-xl object-cover border border-rose-100 mb-1">
+                            <span class="text-[9px] text-gray-500 line-clamp-1">${i.name}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Inicialización
+        updateStats();
+        renderHomeOutfit();
+    </script>
+</body>
+</html>
